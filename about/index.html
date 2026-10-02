@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How it works · Shampoo Arena</title>
+  <meta name="description" content="Shampoos ranked by their ingredients alone, per hair type. LLM judges compare INCI lists blind; a Bradley-Terry fit turns the verdicts into rankings with confidence intervals.">
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@500&family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.12/htmx.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.querySelector('.prose'), {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}]})"></script>
+</head>
+<body>
+  <header class="site">
+    <div class="site-inner ">
+      <a class="logo" href="/">
+        <img class="mark" src="/static/logo.svg" alt="" width="27" height="27">
+        Shampoo Arena
+      </a>
+      <nav>
+        <a href="/" class="">Leaderboard</a>
+        <a href="/about" class="on"><span class="nav-long">How it works</span><span class="nav-short">About</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page ">
+<article class="prose">
+  <div class="eyebrow">Method</div>
+  <h1>How the rankings are made</h1>
+  <p class="lede">
+    Shampoo Arena ranks every shampoo sold on dm.cz by what is in it, separately for each hair
+    type. Nobody rates a shampoo on its own. Language models compare two ingredient lists at a
+    time, without knowing which products they are, and a statistical model turns those verdicts
+    into a ranking that says how sure it is.
+  </p>
+
+  <div class="stat-tiles">
+    <div><b>296</b><span>shampoos ranked</span></div>
+    <div><b>9</b><span>hair types</span></div>
+    <div><b>110,881</b><span>pairwise verdicts</span></div>
+    <div><b>1</b><span>judge model</span></div>
+  </div>
+
+  <h2>The pipeline</h2>
+  <ol class="steps">
+    <li><b>Scrape.</b> Every shampoo on dm.cz, with its INCI ingredient list and price, discovered through the shop&rsquo;s public sitemap.</li>
+    <li><b>Normalise.</b> Ingredient lists are parsed and spellings merged into canonical names. Only exact matches are merged automatically. Near-misses go to a human, because <i>dipropylene glycol</i> and <i>propylene glycol</i> look closer than a genuine typo does.</li>
+    <li><b>Judge.</b> A model is shown two formulations and a hair type and picks the better one, with a confidence from 1 to 5 and its reasons.</li>
+    <li><b>Rank.</b> All verdicts for a hair type are fitted at once with a Bradley&ndash;Terry model.</li>
+  </ol>
+
+  <h2>Judging blind</h2>
+  <p>
+    The judge sees the hair type, a short rubric for it, and two numbered ingredient lists:
+    <b>no brand, no product name, no price, no packaging, no reviews</b>. This is enforced in the
+    code, not just requested in the prompt: the functions that build prompts accept ingredient
+    lists, never products, and a test checks real prompts for product names. The model is asked
+    to reason from the chemistry alone.
+  </p>
+  <div class="snippet">
+    <div class="snippet-head">What a judge sees (illustrative, abridged)</div>
+<pre>Hair profile: Dandruff and flaking scalp
+Judging criteria: favour recognised anti-dandruff actives …
+
+Formulation A:                 Formulation B:
+1. Aqua                        1. Aqua
+2. Sodium Laureth Sulfate      2. Sodium Coco-Sulfate
+3. Cocamidopropyl Betaine      3. Lauryl Glucoside
+…                              …
+10. Piroctone Olamine          6. Hippophae Rhamnoides Fruit Oil
+
+Which formulation is better suited to this hair profile?</pre>
+  </div>
+  <p>
+    Which product appears as A and which as B is randomised for every comparison, and the
+    order is recorded. That lets each hair type&rsquo;s diagnostics page measure position bias
+    instead of assuming it away.
+  </p>
+
+  <h2>From verdicts to a ranking</h2>
+  <p>
+    Each shampoo \(i\) gets one hidden strength \(\beta_i\) per hair type. The
+    Bradley&ndash;Terry model says the chance that \(i\) wins a comparison against \(j\) is
+  </p>
+  <div class="formula">\[
+    P(i \text{ beats } j) \;=\; \sigma(\beta_i - \beta_j) \;=\; \frac{1}{1 + e^{-(\beta_i - \beta_j)}}
+  \]</div>
+  <p>
+    That is the same logistic curve chess Elo uses. The difference is how it is fitted. Elo
+    updates ratings one game at a time, so the same games in a different order give different
+    ratings. Here every verdict is in a database, so all strengths are fitted together, by
+    maximising the penalised log-likelihood of every verdict at once:
+  </p>
+  <div class="formula">\[
+    \hat{\beta} \;=\; \arg\max_{\beta} \; \sum_{\text{verdicts } (w,\,l)} \log \sigma(\beta_w - \beta_l) \;-\; \lambda \sum_i \beta_i^2
+  \]</div>
+  <p>
+    where \(w\) is the winner and \(l\) the loser of each verdict. A tie counts as half a win
+    each way. The small ridge penalty (\(\lambda = 0.5\)) keeps a shampoo that never lost from
+    running off to infinity. The result does not depend on order, needs no tuning constant, and
+    gives every strength a standard error.
+  </p>
+  <p>Strengths are shown on the familiar Elo scale:</p>
+  <div class="formula">\[
+    \text{score}_i \;=\; 1500 + \frac{400}{\ln 10}\,\beta_i \;\approx\; 1500 + 174\,\beta_i
+  \]</div>
+  <p>
+    So 1500 is the average shampoo, and a 200-point gap means the stronger one is expected to
+    win about three comparisons in four.
+  </p>
+
+  <h2>How sure is a rank?</h2>
+  <p>
+    The &plusmn; next to a score is a 95% confidence interval. Its width comes from the
+    standard error of \(\hat\beta_i\), read off the curvature of the likelihood (the inverse
+    Fisher information):
+  </p>
+  <div class="formula">\[
+    \big[\,\ell_i,\; u_i\,\big] \;=\; \text{score}_i \;\pm\; 1.96 \cdot \frac{400}{\ln 10}\,\operatorname{SE}(\hat\beta_i)
+  \]</div>
+  <p>
+    The small range under each rank on the leaderboard (say, <span class="mono">4&ndash;11</span>)
+    turns those intervals into places. The best plausible rank counts only the shampoos whose
+    whole interval lies above this one; the worst counts every shampoo that could be above it:
+  </p>
+  <div class="formula">\[
+    \text{best}_i = 1 + \#\{\, j : \ell_j > u_i \,\} \qquad
+    \text{worst}_i = \#\{\, j : u_j > \ell_i \,\}
+  \]</div>
+  <p>
+    If two shampoos&rsquo; ranges overlap, the data do not say which is better. On each
+    hair type&rsquo;s ranking page, heavier rules mark the points where one group is genuinely
+    separated from the next.
+  </p>
+
+  <h2>Which pairs get judged</h2>
+  <p>
+    Comparing every pair would cost tens of thousands of calls per hair type, and most pairs are
+    foregone conclusions. Instead, each shampoo is first rated once on its own, to give a rough
+    starting order. A few random pairs across that order calibrate the scale. The remaining
+    budget goes to the pairs the current fit is least able to call: a comparison tells the model
+    the most when the predicted win chance is close to 50%.
+  </p>
+
+  <h2>Pooled and per-model rankings</h2>
+  <p>
+    Verdicts are kept separate by judge model and by prompt version, so a ranking never mixes
+    different rubrics. Every judge gets its own ranking, and the <b>pooled</b> ranking is one
+    fit over all included judges&rsquo; verdicts together. The switch on the leaderboard moves
+    between them. When two models disagree about the same pair, the diagnostics pages show how
+    often that happens.
+Currently included:
+<span class="mono">wandb:zai-org/GLM-5.3-Flash</span>.  </p>
+  <p>
+    The &ldquo;Avg rank&rdquo; column on the leaderboard is just the mean of a shampoo&rsquo;s
+    ranks across hair types. It is a convenience for browsing, not a fitted score.
+  </p>
+
+  <h2 id="limits">What this can&rsquo;t tell you</h2>
+  <ul>
+    <li>An INCI list gives the <i>order</i> of ingredients (most to least, down to 1%) but not their concentrations. Two shampoos with near-identical lists can behave differently.</li>
+    <li>It says nothing about pH, how the surfactants behave together, or clinical evidence. The judges reason about plausible chemistry; they do not test anything.</li>
+    <li>Shampoo is a rinse-off product with a short contact time, which limits what any active can do.</li>
+    <li>Some retailer listings carry the wrong ingredient list. The ones found are excluded by hand rather than ranked.</li>
+  </ul>
+  <p>
+    So treat a ranking as a well-grounded signal about formulation, not a verdict on how a shampoo
+    will work on your hair, and not medical advice. The confidence intervals are shown because
+    they matter.
+  </p>
+
+  <h2>Hair types</h2>
+  <div class="profile-grid">
+    <a class="profile-card" href="/profile/fine-oily">
+      <b>Fine hair, oily roots</b>
+      <span>Hair that goes limp and greasy quickly; needs cleansing without weight.</span>
+    </a>
+    <a class="profile-card" href="/profile/dry-damaged">
+      <b>Dry, damaged hair</b>
+      <span>Porous, brittle hair from heat, bleach or mechanical damage.</span>
+    </a>
+    <a class="profile-card" href="/profile/curly">
+      <b>Curly and coily hair</b>
+      <span>Hair that needs moisture retention and definition without stiffness.</span>
+    </a>
+    <a class="profile-card" href="/profile/colour-treated">
+      <b>Colour-treated hair</b>
+      <span>Dyed hair where fade rate and cuticle condition are the priority.</span>
+    </a>
+    <a class="profile-card" href="/profile/dandruff">
+      <b>Dandruff and flaking scalp</b>
+      <span>Visible flaking, typically Malassezia-driven seborrhoeic dermatitis.</span>
+    </a>
+    <a class="profile-card" href="/profile/sensitive-scalp">
+      <b>Sensitive or irritated scalp</b>
+      <span>Scalp prone to itching, redness or reaction.</span>
+    </a>
+    <a class="profile-card" href="/profile/thin-volume">
+      <b>Thinning hair, wanting volume</b>
+      <span>Low density or fine hair where body and scalp condition matter.</span>
+    </a>
+    <a class="profile-card" href="/profile/frizz">
+      <b>Frizz-prone hair</b>
+      <span>Hair that swells and frizzes in humidity.</span>
+    </a>
+    <a class="profile-card" href="/profile/hair-loss">
+      <b>Hair loss and shedding</b>
+      <span>Increased shedding or thinning density, where scalp condition and follicle support matter more than how the hair feels.</span>
+    </a>
+  </div>
+</article>
+  </main>
+
+  <footer class="site">
+    <div class="site-inner ">
+      <span>Shampoos ranked by ingredients alone. Product data from dm.cz; verdicts by LLM judges that see only INCI lists.</span>
+      <span>Not medical advice. <a href="/about#limits">What this can&rsquo;t tell you &rarr;</a></span>
+    </div>
+  </footer>
+  <script>
+    // Static hosts have no server to search, so filter the rendered rows instead. Enter would
+    // submit the form to a URL whose query string the host ignores, so it is swallowed.
+    for (const form of document.querySelectorAll("form[data-filter]")) {
+      const rows = document.querySelectorAll(form.dataset.filter);
+      form.addEventListener("submit", (event) => event.preventDefault());
+      form.addEventListener("input", (event) => {
+        const needle = event.target.value.trim().toLowerCase();
+        for (const row of rows) {
+          const text = row.querySelector(".prod-text")?.textContent.toLowerCase() ?? "";
+          row.hidden = needle !== "" && !text.includes(needle);
+        }
+      });
+    }
+  </script>
+</body>
+</html>

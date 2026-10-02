@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagnostics · Frizz-prone hair · Shampoo Arena</title>
+  <meta name="description" content="Shampoos ranked by their ingredients alone, per hair type. LLM judges compare INCI lists blind; a Bradley-Terry fit turns the verdicts into rankings with confidence intervals.">
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@500&family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.12/htmx.min.js"></script>
+</head>
+<body>
+  <header class="site">
+    <div class="site-inner ">
+      <a class="logo" href="/">
+        <img class="mark" src="/static/logo.svg" alt="" width="27" height="27">
+        Shampoo Arena
+      </a>
+      <nav>
+        <a href="/" class="">Leaderboard</a>
+        <a href="/about" class=""><span class="nav-long">How it works</span><span class="nav-short">About</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page ">
+<div class="crumb"><a href="/">Leaderboard</a><span>/</span><a href="/profile/frizz">Frizz-prone hair</a><span>/</span>diagnostics</div>
+<section class="hero">
+  <div class="eyebrow">Hair type</div>
+  <h1>Frizz-prone hair</h1>
+  <p class="lede">Hair that swells and frizzes in humidity.</p>
+</section>
+<nav class="tabs">
+  <a href="/profile/frizz">Ranking</a>
+  <a href="/effects/frizz" class="">Ingredient effects</a>
+  <a href="/diagnostics/frizz" class="on">Diagnostics</a>
+</nav>
+<section class="section first">
+  <h2>Position bias</h2>
+  <p class="section-sub">
+    Each pair is shown in a random order. If a model simply prefers whichever formulation it
+    reads first, its ranking is largely noise, so some pairs are deliberately re-run the other way
+    round to measure it. A first-position win rate near 50% is unbiased.
+  </p>
+  <div class="plain-wrap"><table class="plain">
+    <thead><tr><th>Judge</th><th class="num">Pairs judged both ways</th><th class="num">Agreement</th><th class="num">First-position wins</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="mono">wandb:zai-org/GLM-5.3-Flash</td>
+        <td class="num muted">0</td>
+        <td class="num"><span class="muted">–</span></td>
+        <td class="num">61%</td>
+        <td class="muted">no pairs judged in both orders yet</td>
+      </tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="section">
+  <h2>Transitivity</h2>
+  <p class="section-sub">
+    Triples where A beats B and B beats C, yet C beats A. Some intransitivity is normal; a lot of
+    it means the comparisons are close to coin flips.
+  </p>
+  <div class="plain-wrap"><table class="plain">
+    <thead><tr><th>Judge</th><th class="num">Violations</th><th class="num">Triples checked</th><th class="num">Rate</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="mono">wandb:zai-org/GLM-5.3-Flash</td>
+        <td class="num">254</td>
+        <td class="num muted">4000</td>
+        <td class="num">6.3%</td>
+      </tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="section">
+  <h2>Cross-judge agreement</h2>
+  <p class="empty">Only one judge has ranked this hair type so far. Judge it with a second model to compare.</p>
+</section>
+  </main>
+
+  <footer class="site">
+    <div class="site-inner ">
+      <span>Shampoos ranked by ingredients alone. Product data from dm.cz; verdicts by LLM judges that see only INCI lists.</span>
+      <span>Not medical advice. <a href="/about#limits">What this can&rsquo;t tell you &rarr;</a></span>
+    </div>
+  </footer>
+  <script>
+    // Static hosts have no server to search, so filter the rendered rows instead. Enter would
+    // submit the form to a URL whose query string the host ignores, so it is swallowed.
+    for (const form of document.querySelectorAll("form[data-filter]")) {
+      const rows = document.querySelectorAll(form.dataset.filter);
+      form.addEventListener("submit", (event) => event.preventDefault());
+      form.addEventListener("input", (event) => {
+        const needle = event.target.value.trim().toLowerCase();
+        for (const row of rows) {
+          const text = row.querySelector(".prod-text")?.textContent.toLowerCase() ?? "";
+          row.hidden = needle !== "" && !text.includes(needle);
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingredient effects · Curly and coily hair · Shampoo Arena</title>
+  <meta name="description" content="Shampoos ranked by their ingredients alone, per hair type. LLM judges compare INCI lists blind; a Bradley-Terry fit turns the verdicts into rankings with confidence intervals.">
+  <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@500&family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.12/htmx.min.js"></script>
+</head>
+<body>
+  <header class="site">
+    <div class="site-inner ">
+      <a class="logo" href="/">
+        <img class="mark" src="/static/logo.svg" alt="" width="27" height="27">
+        Shampoo Arena
+      </a>
+      <nav>
+        <a href="/" class="">Leaderboard</a>
+        <a href="/about" class=""><span class="nav-long">How it works</span><span class="nav-short">About</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page ">
+<div class="crumb"><a href="/">Leaderboard</a><span>/</span><a href="/profile/curly">Curly and coily hair</a><span>/</span>ingredient effects</div>
+<section class="hero">
+  <div class="eyebrow">Hair type</div>
+  <h1>Curly and coily hair</h1>
+  <p class="lede">Hair that needs moisture retention and definition without stiffness.</p>
+</section>
+<nav class="tabs">
+  <a href="/profile/curly">Ranking</a>
+  <a href="/effects/curly" class="on">Ingredient effects</a>
+  <a href="/diagnostics/curly" class="">Diagnostics</a>
+</nav>
+<div class="banner">
+  <strong>Descriptive, not causal.</strong> Ingredients travel together (a sulfate system brings
+  a fixed retinue of co-surfactants), so these effects overlap with one another. Read them as
+  &ldquo;shampoos containing this tend to rank higher&rdquo;, not &ldquo;adding this would raise
+  the score&rdquo;.
+</div>
+
+<div class="board-wrap">
+<table class="board effects">
+  <thead>
+    <tr>
+      <th class="c-product">Ingredient</th>
+      <th class="c-effect">Score with vs without it</th>
+      <th class="num">Effect</th>
+      <th class="num" title="Welch t statistic">t</th>
+      <th class="num" title="Ranked products containing it">With</th>
+      <th class="num" title="Ranked products without it">Without</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="c-product"><span class="ing-name">Basic Blue 124</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:40.17%"></i>
+        </div>
+      </td>
+      <td class="num pos">+581</td>
+      <td class="num muted">+26.4</td>
+      <td class="num muted">3</td>
+      <td class="num muted">293</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Sodium Lauryl Sulfate</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar down" style="left:8.9%; width:41.1%"></i>
+        </div>
+      </td>
+      <td class="num neg">-594</td>
+      <td class="num muted">-18.2</td>
+      <td class="num muted">19</td>
+      <td class="num muted">277</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Retinyl Palmitate</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar down" style="left:0.07%; width:49.93%"></i>
+        </div>
+      </td>
+      <td class="num neg">-722</td>
+      <td class="num muted">-14.6</td>
+      <td class="num muted">3</td>
+      <td class="num muted">293</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Hydroxyethyl-2-Nitro-p-Toluidine</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar down" style="left:31.05%; width:18.95%"></i>
+        </div>
+      </td>
+      <td class="num neg">-274</td>
+      <td class="num muted">-13.0</td>
+      <td class="num muted">3</td>
+      <td class="num muted">293</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Disodium 2-Sulfolaurate</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:37.68%"></i>
+        </div>
+      </td>
+      <td class="num pos">+545</td>
+      <td class="num muted">+12.7</td>
+      <td class="num muted">4</td>
+      <td class="num muted">292</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Glyoxal</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar down" style="left:0.0%; width:50.0%"></i>
+        </div>
+      </td>
+      <td class="num neg">-723</td>
+      <td class="num muted">-12.6</td>
+      <td class="num muted">5</td>
+      <td class="num muted">291</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Cocos Nucifera (coconut) Water</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:27.83%"></i>
+        </div>
+      </td>
+      <td class="num pos">+402</td>
+      <td class="num muted">+12.2</td>
+      <td class="num muted">5</td>
+      <td class="num muted">291</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Methyl Benzoate</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar down" style="left:32.02%; width:17.98%"></i>
+        </div>
+      </td>
+      <td class="num neg">-260</td>
+      <td class="num muted">-10.6</td>
+      <td class="num muted">3</td>
+      <td class="num muted">293</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Diazolidinyl Urea</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:27.18%"></i>
+        </div>
+      </td>
+      <td class="num pos">+393</td>
+      <td class="num muted">+9.4</td>
+      <td class="num muted">4</td>
+      <td class="num muted">292</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Iodopropynyl Butylcarbamate</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:27.18%"></i>
+        </div>
+      </td>
+      <td class="num pos">+393</td>
+      <td class="num muted">+9.4</td>
+      <td class="num muted">4</td>
+      <td class="num muted">292</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Silicone Quaternium-22</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:24.56%"></i>
+        </div>
+      </td>
+      <td class="num pos">+355</td>
+      <td class="num muted">+9.4</td>
+      <td class="num muted">3</td>
+      <td class="num muted">293</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Sodium Laureth Sulfate</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar down" style="left:27.72%; width:22.28%"></i>
+        </div>
+      </td>
+      <td class="num neg">-322</td>
+      <td class="num muted">-8.3</td>
+      <td class="num muted">193</td>
+      <td class="num muted">103</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Sodium Xylenesulfonate</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar down" style="left:22.3%; width:27.7%"></i>
+        </div>
+      </td>
+      <td class="num neg">-400</td>
+      <td class="num muted">-8.2</td>
+      <td class="num muted">40</td>
+      <td class="num muted">256</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Methyl Gluceth-10</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:28.18%"></i>
+        </div>
+      </td>
+      <td class="num pos">+407</td>
+      <td class="num muted">+8.0</td>
+      <td class="num muted">3</td>
+      <td class="num muted">293</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Tapioca Starch</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:28.18%"></i>
+        </div>
+      </td>
+      <td class="num pos">+407</td>
+      <td class="num muted">+8.0</td>
+      <td class="num muted">3</td>
+      <td class="num muted">293</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Threonine</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:29.34%"></i>
+        </div>
+      </td>
+      <td class="num pos">+424</td>
+      <td class="num muted">+7.4</td>
+      <td class="num muted">11</td>
+      <td class="num muted">285</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Coco-Glucoside</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:18.24%"></i>
+        </div>
+      </td>
+      <td class="num pos">+264</td>
+      <td class="num muted">+7.3</td>
+      <td class="num muted">109</td>
+      <td class="num muted">187</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Tetrasodium EDTA</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar down" style="left:24.59%; width:25.41%"></i>
+        </div>
+      </td>
+      <td class="num neg">-367</td>
+      <td class="num muted">-7.0</td>
+      <td class="num muted">43</td>
+      <td class="num muted">253</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Alanine</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:27.97%"></i>
+        </div>
+      </td>
+      <td class="num pos">+404</td>
+      <td class="num muted">+6.7</td>
+      <td class="num muted">10</td>
+      <td class="num muted">286</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Glyceryl Oleate</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:16.08%"></i>
+        </div>
+      </td>
+      <td class="num pos">+232</td>
+      <td class="num muted">+6.4</td>
+      <td class="num muted">94</td>
+      <td class="num muted">202</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Sodium Cocoyl Isethionate</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:30.25%"></i>
+        </div>
+      </td>
+      <td class="num pos">+437</td>
+      <td class="num muted">+6.3</td>
+      <td class="num muted">16</td>
+      <td class="num muted">280</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Triethylene Glycol</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar down" style="left:25.86%; width:24.14%"></i>
+        </div>
+      </td>
+      <td class="num neg">-349</td>
+      <td class="num muted">-6.3</td>
+      <td class="num muted">21</td>
+      <td class="num muted">275</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Glycine</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:27.48%"></i>
+        </div>
+      </td>
+      <td class="num pos">+397</td>
+      <td class="num muted">+6.3</td>
+      <td class="num muted">11</td>
+      <td class="num muted">285</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Hydrolyzed Pea Protein</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:29.02%"></i>
+        </div>
+      </td>
+      <td class="num pos">+419</td>
+      <td class="num muted">+6.2</td>
+      <td class="num muted">3</td>
+      <td class="num muted">293</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">PEG-200 Hydrogenated Glyceryl Palmate</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar down" style="left:33.04%; width:16.96%"></i>
+        </div>
+      </td>
+      <td class="num neg">-245</td>
+      <td class="num muted">-6.0</td>
+      <td class="num muted">7</td>
+      <td class="num muted">289</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Aspartic Acid</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:27.6%"></i>
+        </div>
+      </td>
+      <td class="num pos">+399</td>
+      <td class="num muted">+6.0</td>
+      <td class="num muted">9</td>
+      <td class="num muted">287</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Valine</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:27.6%"></i>
+        </div>
+      </td>
+      <td class="num pos">+399</td>
+      <td class="num muted">+6.0</td>
+      <td class="num muted">9</td>
+      <td class="num muted">287</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Isoleucine</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:27.6%"></i>
+        </div>
+      </td>
+      <td class="num pos">+399</td>
+      <td class="num muted">+6.0</td>
+      <td class="num muted">9</td>
+      <td class="num muted">287</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Proline</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:27.6%"></i>
+        </div>
+      </td>
+      <td class="num pos">+399</td>
+      <td class="num muted">+6.0</td>
+      <td class="num muted">9</td>
+      <td class="num muted">287</td>
+    </tr>
+    <tr>
+      <td class="c-product"><span class="ing-name">Phenylalanine</span></td>
+      <td class="c-effect">
+        <div class="effectbar">
+          <i class="origin"></i>
+          <i class="bar up" style="left:50%; width:27.6%"></i>
+        </div>
+      </td>
+      <td class="num pos">+399</td>
+      <td class="num muted">+6.0</td>
+      <td class="num muted">9</td>
+      <td class="num muted">287</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p class="board-foot">Effect is the difference in mean score (Elo points) between ranked shampoos that contain the ingredient and those that do not; |t|&nbsp;above about 2 is unlikely to be chance alone.</p>
+  </main>
+
+  <footer class="site">
+    <div class="site-inner ">
+      <span>Shampoos ranked by ingredients alone. Product data from dm.cz; verdicts by LLM judges that see only INCI lists.</span>
+      <span>Not medical advice. <a href="/about#limits">What this can&rsquo;t tell you &rarr;</a></span>
+    </div>
+  </footer>
+  <script>
+    // Static hosts have no server to search, so filter the rendered rows instead. Enter would
+    // submit the form to a URL whose query string the host ignores, so it is swallowed.
+    for (const form of document.querySelectorAll("form[data-filter]")) {
+      const rows = document.querySelectorAll(form.dataset.filter);
+      form.addEventListener("submit", (event) => event.preventDefault());
+      form.addEventListener("input", (event) => {
+        const needle = event.target.value.trim().toLowerCase();
+        for (const row of rows) {
+          const text = row.querySelector(".prod-text")?.textContent.toLowerCase() ?? "";
+          row.hidden = needle !== "" && !text.includes(needle);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
